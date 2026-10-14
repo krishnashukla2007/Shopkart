@@ -2,6 +2,12 @@
 
 ShopKart is a full-stack e-commerce application built with React, Node.js, Express, and MongoDB. It supports customer authentication, product browsing, wishlists, shopping carts, checkout, and order management, with Razorpay test-mode payment integration.
 
+**🚀 Live Demo:** [ShopKart](https://shopkart-flax-six.vercel.app/)
+
+**💻 GitHub Repository:** [ShopKart Source Code](https://github.com/krishnashukla2007/Shopkart)
+
+> **Note:** The live application depends on the availability of the deployed backend and database. Razorpay payments are configured for test mode only.
+
 ## Features
 
 * Customer registration and login
@@ -37,6 +43,12 @@ ShopKart is a full-stack e-commerce application built with React, Node.js, Expre
 * Cookie Parser
 * Razorpay
 
+### Deployment and Database
+
+* **Frontend:** Vercel
+* **Backend:** Render
+* **Database:** MongoDB Atlas
+
 ## Project Structure
 
 ```text
@@ -64,7 +76,7 @@ shop-kart/
 
 ## Prerequisites
 
-Install the following before running the project:
+Install the following before running the project locally:
 
 * Node.js and npm
 * MongoDB, either locally or through MongoDB Atlas
@@ -74,16 +86,16 @@ Install the following before running the project:
 
 ### 1. Clone the Repository
 
-```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd shop-kart
-```
+Clone the repository and navigate to the project directory.
 
-Replace `YOUR_GITHUB_REPOSITORY_URL` with the repository URL.
+```bash
+git clone https://github.com/krishnashukla2007/Shopkart.git
+cd Shopkart
+```
 
 ### 2. Configure the Backend
 
-Open a terminal in the project root and run:
+Navigate to the backend directory and install the dependencies.
 
 ```bash
 cd backend
@@ -108,7 +120,7 @@ Replace the placeholder values with your own credentials.
 * `RAZORPAY_KEY_ID`: Your Razorpay test-mode key ID.
 * `RAZORPAY_KEY_SECRET`: Your Razorpay test-mode key secret.
 
-Never commit your actual `.env` file or expose API secrets in the repository.
+**Security:** Never commit your actual `.env` file or expose API secrets in the repository. Keep backend credentials on the server and use environment variables to configure them.
 
 ### 3. Start the Backend
 
@@ -120,7 +132,9 @@ node server.js
 
 The backend runs at:
 
-`http://localhost:5000`
+```text
+http://localhost:5000
+```
 
 The server connects to MongoDB and exposes routes for customers, products, wishlists, carts, and orders.
 
@@ -128,7 +142,7 @@ Keep this terminal running.
 
 ### 4. Configure and Start the Frontend
 
-Open a second terminal in the project root and run:
+Open a second terminal in the project root and navigate to the frontend directory.
 
 ```bash
 cd frontend
@@ -138,11 +152,13 @@ npm run dev
 
 Vite starts the frontend, normally at:
 
-`http://localhost:5173`
+```text
+http://localhost:5173
+```
 
 Open that address in your browser.
 
-The frontend API client connects to the backend at `http://localhost:5000`. The backend also allows credentialed requests from `http://localhost:5173`, so both applications should run at these addresses with the current configuration.
+For local development, ensure the frontend API client points to your local backend and that the backend CORS configuration allows credentialed requests from the local frontend origin.
 
 ## Application Workflow
 
@@ -158,18 +174,87 @@ The frontend API client connects to the backend at `http://localhost:5000`. The 
 
 Use Razorpay's test-mode credentials and supported test-payment details when testing checkout. Test transactions do not represent real payments.
 
+## Deployment
+
+ShopKart is deployed using the following architecture:
+
+| Component | Platform      | Purpose                          |
+| --------- | ------------- | -------------------------------- |
+| Frontend  | Vercel        | Hosts the React application      |
+| Backend   | Render        | Runs the Node.js and Express API |
+| Database  | MongoDB Atlas | Stores application data          |
+
+### Live Application
+
+Access the deployed application here:
+
+**[Open ShopKart](https://shopkart-flax-six.vercel.app/)**
+
+### Production Configuration
+
+The deployed application requires the following configuration.
+
+**Frontend — Vercel**
+
+Configure the following environment variable:
+
+```env
+VITE_API_URL=your_deployed_backend_url
+```
+
+Replace the placeholder with your actual Render backend URL.
+
+Because Vite exposes variables prefixed with `VITE_` to browser-side code, this variable should contain only the public backend URL, not secrets.
+
+After changing environment variables, redeploy the frontend so the changes take effect.
+
+**Backend — Render**
+
+Configure the environment variables required by the backend:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+RAZORPAY_KEY_ID=your_razorpay_test_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_test_key_secret
+```
+
+Ensure that:
+
+* The MongoDB Atlas cluster is available and accessible to the deployed backend.
+* The database credentials are valid.
+* The backend uses the correct port configuration for Render.
+* CORS allows requests from the deployed Vercel frontend.
+* Cookie settings support the deployed frontend and backend origins.
+* Razorpay test-mode credentials are configured correctly.
+
+**Database — MongoDB Atlas**
+
+The backend uses MongoDB Atlas to store application data. Configure network access and database authentication appropriately for the deployed backend.
+
+Avoid exposing database credentials or unnecessarily allowing unrestricted network access.
+
 ## Security Considerations
 
 * Passwords are hashed using bcrypt.
 * Authentication uses JWTs and cookies.
-* The backend validates checkout data and calculates order totals server-side.
+* Backend validation is used to validate incoming data.
+* Checkout data is validated and order totals are calculated server-side.
 * Payment verification is performed on the backend.
 * Order access is restricted to the relevant customer.
 * Environment files containing secrets must not be committed to GitHub.
+* Sensitive credentials must be stored in backend environment variables rather than frontend code.
+* Production CORS and cookie settings must be configured appropriately for cross-origin requests.
 
 ## Development Commands
 
 ### Backend
+
+Install dependencies:
+
+```bash
+npm install
+```
 
 Start the backend:
 
@@ -177,13 +262,13 @@ Start the backend:
 node server.js
 ```
 
-Install backend dependencies:
+### Frontend
+
+Install dependencies:
 
 ```bash
 npm install
 ```
-
-### Frontend
 
 Start the development server:
 
@@ -211,10 +296,14 @@ npm run preview
 
 ## Important Notes
 
-* MongoDB must be accessible and the connection string must be valid.
+* MongoDB must be accessible, and the connection string must be valid.
 * The backend requires the environment variables listed above.
 * Razorpay payment processing requires valid test-mode credentials.
-* The current frontend API URL and backend CORS configuration use localhost addresses. These must be updated if the application is deployed to different domains.
+* The frontend API URL must point to the appropriate backend for the environment.
+* The backend CORS configuration must allow requests from the correct frontend origin.
+* Authentication cookies must be configured appropriately for local development and production deployment.
+* The live application depends on the availability of Vercel, Render, and MongoDB Atlas.
+* Render services may take longer to respond after a period of inactivity, depending on the hosting plan.
 * The backend currently has no configured automated test suite.
 
 ## License
